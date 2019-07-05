@@ -20,7 +20,7 @@
         <StackPanel Margin="10,94,0,0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="118" Height="105" VerticalAlignment="Top">
             <Label Content="Save to:" HorizontalAlignment="Left" Width="123"/>
             <TextBox Height="23" Name="saveFilePath" TextWrapping="Wrap" Text="csv file format" Margin="13,0,0,0" HorizontalAlignment="Left" Width="103"/>
-            <Button Content="sansho" HorizontalAlignment="Left" Margin="13,10,0,0" VerticalAlignment="Top" Width="103" RenderTransformOrigin="-0.413,0.575" Click="setPath_Click"/>
+            <Button Content="folder" HorizontalAlignment="Left" Margin="13,10,0,0" VerticalAlignment="Top" Width="103" RenderTransformOrigin="-0.413,0.575" Click="setPath_Click"/>
         </StackPanel>
         <StackPanel Margin="136,94,10.091,9.782" Grid.RowSpan="2">
             <CheckBox x:Name="checkBoxUDP" Content="UDP Send to..." Checked="CheckBoxUDP_Checked" Unchecked="CheckBoxUDP_Unchecked"/>
