@@ -5,8 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HR_BLE_to_UDP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="BLE HR" Height="266.728" Width="285.091" Closed="windowClosed">
+    <Grid Margin="0,10,0.309,-0.182">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="106*"/>
+            <RowDefinition Height="51*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Margin="10,0,10,73.327">
+            <Button Content="Connect"
+                Click="ButtonConnect_Click" />
+            <Button Content="Read value"
+                Click="ButtonReadValue_Click" />
+        </StackPanel>
+        <StackPanel Margin="10,94,0,0" Grid.RowSpan="2" HorizontalAlignment="Left" Width="118" Height="105" VerticalAlignment="Top">
+            <Label Content="Save to:" HorizontalAlignment="Left" Width="123"/>
+            <TextBox Height="23" Name="saveFilePath" TextWrapping="Wrap" Text="csv file format" Margin="13,0,0,0" HorizontalAlignment="Left" Width="103"/>
+            <Button Content="sansho" HorizontalAlignment="Left" Margin="13,10,0,0" VerticalAlignment="Top" Width="103" RenderTransformOrigin="-0.413,0.575" Click="setPath_Click"/>
+        </StackPanel>
+        <StackPanel Margin="136,94,10.091,9.782" Grid.RowSpan="2">
+            <CheckBox x:Name="checkBoxUDP" Content="UDP Send to..." Checked="CheckBoxUDP_Checked" Unchecked="CheckBoxUDP_Unchecked"/>
+            <Label Content="IP Address:" HorizontalAlignment="Left" Width="123"/>
+            <TextBox Height="23" Name="UDP_IPAddress" TextWrapping="Wrap" Text="127.0.0.1" Margin="13,0,0,0" HorizontalAlignment="Left" Width="103"/>
+            <Label Content="Port: " Margin="0,0,0.709,0"/>
+            <TextBox Height="23" Name="UDP_Port" TextWrapping="Wrap" Text="9999" Margin="13,0,0,0" HorizontalAlignment="Left" Width="103"/>
+        </StackPanel>
+        <TextBlock Name="textBlock1" HorizontalAlignment="Left" Margin="10,49,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="40" Width="258"/>
     </Grid>
 </Window>
