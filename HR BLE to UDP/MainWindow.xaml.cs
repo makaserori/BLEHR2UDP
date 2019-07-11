@@ -27,6 +27,15 @@ namespace HR_BLE_to_UDP
         public const string UuidIrtData = "00002A37-0000-1000-8000-00805F9B34FB";
         // public const string UuidIrtConf = "00002A39-0000-1000-8000-00805F9B34FB";
     }
+    public class HeartRate
+    {
+        public string device { get; set; }
+        public string timestamp { get; set; }
+        public string RRI { get; set; }
+        public string HR { get; set; }
+        public string events { get; set; }
+       
+    }
 
 
     /// <summary>
@@ -104,10 +113,23 @@ namespace HR_BLE_to_UDP
 
                 if (checkBoxUDP.IsChecked == true)
                 {
+                    var H = new HeartRate();
+                    H.device = "Polar";
+                    H.timestamp = (DateTime.Now.ToString("HH:mm:ss.fff")).ToString();
+                    H.RRI = "0";
+                    H.HR = data.GetValue(1).ToString();
+                    H.events = "0";
 
+                    using (var ms = new MemoryStream())
                     using (var sr = new StreamReader(ms))
                     {
+                        var serializer = new DataContractJsonSerializer(typeof(HeartRate));
+                        serializer.WriteObject(ms, H);
+                        ms.Position = 0;
 
+                        var json = sr.ReadToEnd();
+                        byte[] dgram = Encoding.UTF8.GetBytes(json);
+                        client.Send(dgram, dgram.Length);
 
                     }
                 }
