@@ -151,6 +151,9 @@ namespace HR_BLE_to_UDP
         {
             textBlock1.Text = "open UDP settion";
             sendAddress = IPAddress.Parse(UDP_IPAddress.Text);
+            client = new UdpClient();
+            client.Connect(sendAddress, Int32.Parse(UDP_Port.Text));
+
         }
 
         private void CheckBoxUDP_Unchecked(object sender, RoutedEventArgs e)
