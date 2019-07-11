@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Runtime.Serialization.Json;
 using System.Windows;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Bluetooth;
@@ -12,6 +13,8 @@ using System.Net;
 using System.IO;
 using Microsoft.Win32;
 using System.Text;
+using System.Net.Sockets;
+
 
 namespace HR_BLE_to_UDP
 {
@@ -25,6 +28,7 @@ namespace HR_BLE_to_UDP
         // public const string UuidIrtConf = "00002A39-0000-1000-8000-00805F9B34FB";
     }
 
+
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
     /// </summary>
@@ -35,6 +39,7 @@ namespace HR_BLE_to_UDP
         private GattCharacteristic GattCharacteristic { get; set; }
         IPAddress sendAddress = null;
         int count = 0;
+        private UdpClient client;
 
         //ファイル書き出し用
         Stream st = null;
@@ -58,25 +63,27 @@ namespace HR_BLE_to_UDP
                 return;
             }
 
-            this.GattDeviceService = await GattDeviceService.FromIdAsync(deviceInformation.Id);
+            GattDeviceService = await GattDeviceService.FromIdAsync(deviceInformation.Id);
             MessageBox.Show($"found {deviceInformation.Id}");
         }
 
         private async void ButtonReadValue_Click(object sender, RoutedEventArgs e)
         {
-            if (this.GattDeviceService == null)
+            if (GattDeviceService == null)
             {
                 MessageBox.Show("Please click connect button");
                 return;
             }
 
             // 値を読み始める
-            if (this.GattCharacteristic == null)
+            if (GattCharacteristic == null)
             {
-                this.GattCharacteristic = this.GattDeviceService.GetCharacteristics(new Guid(SensorTagUuid.UuidIrtData)).First();
-                this.GattCharacteristic.ValueChanged += this.GattCharacteristic_ValueChanged;
+#pragma warning disable CS0618 // Type or member is obsolete
+                GattCharacteristic = GattDeviceService.GetCharacteristics(new Guid(SensorTagUuid.UuidIrtData)).First();
+#pragma warning restore CS0618 // Type or member is obsolete
+                GattCharacteristic.ValueChanged += GattCharacteristic_ValueChanged;
 
-                var status = await this.GattCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+                var status = await GattCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
                 if (status == GattCommunicationStatus.Unreachable)
                 {
                     MessageBox.Show("Failed");
@@ -88,22 +95,20 @@ namespace HR_BLE_to_UDP
         private async void GattCharacteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
             // 値を読んで表示する
-            await this.Dispatcher.InvokeAsync(() =>
+            await Dispatcher.InvokeAsync(() =>
             {
                 var data = new byte[args.CharacteristicValue.Length];
                 DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
-                this.textBlock1.Text = "Sample No. " + count.ToString() + "\n HR: " + data.GetValue(1).ToString();
+                textBlock1.Text = "Sample No. " + count.ToString() + "\n HR: " + data.GetValue(1).ToString();
                 count++;
 
-                if (this.checkBoxUDP.IsChecked == true)
+                if (checkBoxUDP.IsChecked == true)
                 {
-                    using (OscSender oscSender = new OscSender(sendAddress, Int32.Parse(this.UDP_Port.Text)))
-                    {
-                        // 接続
-                        oscSender.Connect();
 
-                        // OSC送信
-                        oscSender.Send(new OscMessage("/oh1", data.GetValue(1).ToString()));
+                    using (var sr = new StreamReader(ms))
+                    {
+
+
                     }
                 }
                 if (sw != null)
@@ -122,13 +127,13 @@ namespace HR_BLE_to_UDP
 
         private void CheckBoxUDP_Checked(object sender, RoutedEventArgs e)
         {
-            this.textBlock1.Text = "open UDP settion";
-            sendAddress = IPAddress.Parse(this.UDP_IPAddress.Text);
+            textBlock1.Text = "open UDP settion";
+            sendAddress = IPAddress.Parse(UDP_IPAddress.Text);
         }
 
         private void CheckBoxUDP_Unchecked(object sender, RoutedEventArgs e)
         {
-            this.textBlock1.Text = "close UDP settion";
+            textBlock1.Text = "close UDP settion";
 
         }
 
