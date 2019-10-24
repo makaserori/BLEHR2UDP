@@ -29,11 +29,11 @@ namespace HR_BLE_to_UDP
     }
     public class HeartRate
     {
-        public string device { get; set; }
-        public string timestamp { get; set; }
-        public string RRI { get; set; }
+        public string Device { get; set; }
+        public string Timestamp { get; set; }
         public string HR { get; set; }
-        public string events { get; set; }
+        public string FHR { get; set; }
+        public string Events { get; set; }
        
     }
 
@@ -49,6 +49,11 @@ namespace HR_BLE_to_UDP
         IPAddress sendAddress = null;
         int count = 0;
         private UdpClient client;
+        private float Percent = 1.0f;
+        private int FHR;
+        private int HR = 60;
+        private int chose_event = 0;
+        //１：Set FHR Figure　２：Set Down Percent
 
         //ファイル書き出し用
         Stream st = null;
@@ -58,6 +63,11 @@ namespace HR_BLE_to_UDP
         public MainWindow()
         {
             InitializeComponent();
+            //Combobox設定
+            cbxType.Items.Add("Set MHR");
+            cbxType.Items.Add("Set FHR Figure");
+            cbxType.Items.Add("Set Down Percent");
+
         }
 
         private async void ButtonConnect_Click(object sender, RoutedEventArgs e)
@@ -106,19 +116,28 @@ namespace HR_BLE_to_UDP
             // 値を読んで表示する
             await Dispatcher.InvokeAsync(() =>
             {
+                //値を取得
                 var data = new byte[args.CharacteristicValue.Length];
                 DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
-                textBlock1.Text = "Sample No. " + count.ToString() + "\n HR: " + data.GetValue(1).ToString();
+                HR = int.Parse(data.GetValue(1).ToString());
+                if(chose_event != 1)
+                {
+                    FHR = (int)(HR * Percent);
+                }
+                //ブラウザ上に送信する心拍数を表示
+                textBlock1.Text = "Sample No. " + count.ToString() + "\n HR: " + HR.ToString() + " / FHR: " + FHR.ToString();
                 count++;
 
                 if (checkBoxUDP.IsChecked == true)
                 {
-                    var H = new HeartRate();
-                    H.device = "Polar";
-                    H.timestamp = (DateTime.Now.ToString("HH:mm:ss.fff")).ToString();
-                    H.RRI = "0";
-                    H.HR = data.GetValue(1).ToString();
-                    H.events = "0";
+                    var H = new HeartRate
+                    {
+                        Device = "Polar",
+                        Timestamp = (DateTime.Now.ToString("HH:mm:ss.fff")).ToString(),
+                        HR = HR.ToString(),
+                        FHR = FHR.ToString(),
+                        Events = "0"
+                    };
 
                     using (var ms = new MemoryStream())
                     using (var sr = new StreamReader(ms))
@@ -146,7 +165,7 @@ namespace HR_BLE_to_UDP
                 }
             });
         }
-
+        //UDP設定
         private void CheckBoxUDP_Checked(object sender, RoutedEventArgs e)
         {
             textBlock1.Text = "open UDP settion";
@@ -155,30 +174,32 @@ namespace HR_BLE_to_UDP
             client.Connect(sendAddress, Int32.Parse(UDP_Port.Text));
 
         }
-
+        //UDP終了
         private void CheckBoxUDP_Unchecked(object sender, RoutedEventArgs e)
         {
             textBlock1.Text = "close UDP settion";
 
         }
-
-        private void setPath_Click(object sender, RoutedEventArgs e)
+        //ファイル作成
+        private void SetPath_Click(object sender, RoutedEventArgs e)
         {
             // ファイル保存ダイアログ
-            SaveFileDialog dlg = new SaveFileDialog();
+            SaveFileDialog dlg = new SaveFileDialog
+            {
 
-            // デフォルトファイル名
-            //            dlg.FileName = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-            dlg.FileName = "oh1_D" + DateTime.Now.ToString("yyyyMMdd") + "T" + DateTime.Now.ToString("HHmm");
+                // デフォルトファイル名
+                //            dlg.FileName = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+                FileName = "oh1_D" + DateTime.Now.ToString("yyyyMMdd") + "T" + DateTime.Now.ToString("HHmm"),
 
-            // デフォルトディレクトリ
-            dlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                // デフォルトディレクトリ
+                InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
 
-            // ファイルのフィルタ
-            dlg.Filter = "CSVファイル|*.csv|すべてのファイル|*.*";
+                // ファイルのフィルタ
+                Filter = "CSVファイル|*.csv|すべてのファイル|*.*",
 
-            // ファイルの種類
-            dlg.FilterIndex = 0;
+                // ファイルの種類
+                FilterIndex = 0
+            };
 
             // 指定されたファイル名を取得
 
@@ -199,8 +220,40 @@ namespace HR_BLE_to_UDP
             {
             }
         }
+        //FHR設定
+        private void SetPercent_Click (object sender, RoutedEventArgs e)
+        {
+            if (cbxType.Text.Equals("Set MHR"))
+            {
+                textBlock1.Text = "Set MHR";
+                Percent = 1.0f;
+                setPercent.Text = "0";
+                chose_event = 2;
+            }
+            //固定値
+            else if (cbxType.Text.Equals("Set FHR Figure"))
+            {
+                textBlock1.Text = "Set FHR Figure";
+                FHR = int.Parse(setPercent.Text);
+                chose_event = 1;
 
-        private void windowClosed(object sender, EventArgs e)
+            }
+            //可変値
+            else if (cbxType.Text.Equals("Set Down Percent"))
+            {
+                textBlock1.Text = "Set Down Percent";
+                Percent = (100.0f - float.Parse(setPercent.Text)) / 100.0f;
+                chose_event = 2;
+
+            }
+            else
+            {
+                textBlock1.Text = "Please Chose";
+            }
+
+        }
+
+        private void WindowClosed(object sender, EventArgs e)
         {
             if (sw != null)
             {
@@ -211,5 +264,7 @@ namespace HR_BLE_to_UDP
                 st.Close();
             }
         }
+
+
     }
 }
