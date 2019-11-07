@@ -33,6 +33,7 @@ namespace HR_BLE_to_UDP
         public string Timestamp { get; set; }
         public string HR { get; set; }
         public string FHR { get; set; }
+        public string Flag { get; set; }
         public string Events { get; set; }
        
     }
@@ -53,6 +54,7 @@ namespace HR_BLE_to_UDP
         private int FHR;
         private int HR = 60;
         private int chose_event = 0;
+        private int flag = 0;
         //１：Set FHR Figure　２：Set Down Percent
 
         //ファイル書き出し用
@@ -136,6 +138,7 @@ namespace HR_BLE_to_UDP
                         Timestamp = (DateTime.Now.ToString("HH:mm:ss.fff")).ToString(),
                         HR = HR.ToString(),
                         FHR = FHR.ToString(),
+                        Flag = flag.ToString(),
                         Events = "0"
                     };
 
@@ -157,7 +160,9 @@ namespace HR_BLE_to_UDP
                     StringBuilder sb = new StringBuilder();
 
                     sb.Append(DateTime.Now.ToString("HH:mm:ss.fff")).Append(delmiter);
-                    sb.Append(data.GetValue(1).ToString()).Append(delmiter);
+                    sb.Append(HR.ToString()).Append(delmiter);
+                    sb.Append(FHR.ToString()).Append(delmiter);
+                    sb.Append(flag.ToString()).Append(delmiter);
                     sb.Append(Environment.NewLine);
 
                     sw.Write(sb.ToString());
@@ -209,6 +214,8 @@ namespace HR_BLE_to_UDP
 
                 sb.Append("Time").Append(delmiter);
                 sb.Append("HR").Append(delmiter);
+                sb.Append("FHR").Append(delmiter);
+                sb.Append("Flag").Append(delmiter);
                 sb.Append(Environment.NewLine);
 
                 st = dlg.OpenFile();
@@ -252,8 +259,37 @@ namespace HR_BLE_to_UDP
             }
 
         }
+        private void SetFlag_Click(object sender, RoutedEventArgs e)
+        {
+            if (setFlag.Text.Equals("Ready"))
+            {
+                flag = 1;
+                setFlag.Text = "Task_ready";
+            }
+            else if (setFlag.Text.Equals("Task_ready"))
+            {
+                flag = 2;
+                setFlag.Text = "Task_speak";
+            }
+            else if (setFlag.Text.Equals("Task_speak"))
+            {
+                flag = -3;
+                setFlag.Text = "Finish:Please push flag";
+            }
+            else if (setFlag.Text.Equals("Finish:Please push flag"))
+            {
+                flag = 0;
+                setFlag.Text = "Ready";
+            }
+            else
+            {
+                flag = 0;
+                setFlag.Text = "Ready";
+            }
 
-        private void WindowClosed(object sender, EventArgs e)
+        }
+
+            private void WindowClosed(object sender, EventArgs e)
         {
             if (sw != null)
             {
