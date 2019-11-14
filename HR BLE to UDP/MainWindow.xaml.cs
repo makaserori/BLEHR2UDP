@@ -166,7 +166,7 @@ namespace HR_BLE_to_UDP
                     sb.Append(Environment.NewLine);
 
                     sw.Write(sb.ToString());
-
+                    
                 }
             });
         }
