@@ -222,6 +222,7 @@ namespace HR_BLE_to_UDP
                 sw = new StreamWriter(st, Encoding.GetEncoding("UTF-8"));
 
                 sw.Write(sb.ToString());
+                saveFilePath.Text = "Start Save CSV";
             }
             else
             {
@@ -264,14 +265,9 @@ namespace HR_BLE_to_UDP
             if (setFlag.Text.Equals("Ready"))
             {
                 flag = 1;
-                setFlag.Text = "Task_ready";
+                setFlag.Text = "Task";
             }
-            else if (setFlag.Text.Equals("Task_ready"))
-            {
-                flag = 2;
-                setFlag.Text = "Task_speak";
-            }
-            else if (setFlag.Text.Equals("Task_speak"))
+            else if (setFlag.Text.Equals("Task"))
             {
                 flag = -3;
                 setFlag.Text = "Finish:Please push flag";

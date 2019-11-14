@@ -27,14 +27,14 @@
             <Label Content="IP Address:" HorizontalAlignment="Left" Width="123"/>
             <TextBox Height="23" Name="UDP_IPAddress" TextWrapping="Wrap" Text="127.0.0.1" Margin="13,0,0,0" HorizontalAlignment="Left" Width="103"/>
             <Label Content="Port: " Margin="0,0,0.709,0"/>
-            <TextBox Height="23" Name="UDP_Port" TextWrapping="Wrap" Text="9999" Margin="13,0,0,0" HorizontalAlignment="Left" Width="103"/>
+            <TextBox Height="23" Name="UDP_Port" TextWrapping="Wrap" Text="6010" Margin="13,0,0,0" HorizontalAlignment="Left" Width="103"/>
         </StackPanel>
         <TextBlock Name="textBlock1" HorizontalAlignment="Left" Margin="10,49,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="45" Width="128"/>
         <StackPanel Margin="2,173,0,0" HorizontalAlignment="Left" Width="136" Height="89" VerticalAlignment="Top" Grid.RowSpan="2">
             <Label HorizontalAlignment="Center" Width="136">
-                <ComboBox Name="cbxType" Width="126" IsEditable="True" IsReadOnly="True" Text="Please FHR Select"/>
+                <ComboBox Name="cbxType" Width="126" IsEditable="True" IsReadOnly="True" Text="Set FHR Figure"/>
             </Label>
-            <TextBox Height="23" x:Name="setPercent" TextWrapping="Wrap" Text="0" Margin="13,0,9.333,0"/>
+            <TextBox Height="23" x:Name="setPercent" TextWrapping="Wrap" Text="66" Margin="13,0,9.333,0"/>
             <Button Content="set" HorizontalAlignment="Left" Margin="63,10,0,0" VerticalAlignment="Top" Width="53" RenderTransformOrigin="-0.413,0.575" Click="SetPercent_Click"/>
         </StackPanel>
         <StackPanel Margin="139,180,0,0" HorizontalAlignment="Left" Width="139" Height="90" VerticalAlignment="Top" Grid.RowSpan="2">
